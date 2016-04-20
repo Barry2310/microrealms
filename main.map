@@ -1,0 +1,240 @@
+Archive member included because of file (symbol)
+
+/usr/local/gcc-arm-none-eabi-4_7-2013q2/lib/gcc/arm-none-eabi/4.7.4/armv6-m/libgcc.a(_thumb1_case_uqi.o)
+                              realm.o (__gnu_thumb1_case_uqi)
+
+Allocating common symbols
+Common symbol       size              file
+
+theRealm            0x258             realm.o
+thePlayer           0x1d              realm.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+flash            0x00000000         0x00001000
+ram              0x10000000         0x00000400
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD init.o
+LOAD serial.o
+LOAD main.o
+LOAD realm.o
+LOAD /usr/local/gcc-arm-none-eabi-4_7-2013q2/lib/gcc/arm-none-eabi/4.7.4/armv6-m/libgcc.a
+                0x00000000                . = ORIGIN (flash)
+
+.text           0x00000000      0xb0c
+ *(.vectors)
+ .vectors       0x00000000       0x50 init.o
+                0x00000000                Vectors
+ *(.text)
+ .text          0x00000050       0x4c init.o
+                0x00000050                Default_Handler
+                0x00000052                init
+ .text          0x0000009c      0x18c serial.o
+                0x0000009c                initUART
+                0x0000012c                putBuf
+                0x0000014e                UART0_isr
+                0x00000174                getBuf
+                0x0000019a                rx_count
+                0x000001a4                eputc
+                0x000001bc                eputs
+                0x000001d0                egetc
+                0x000001e0                printString
+                0x000001f4                HexDigit
+                0x00000204                printHex
+ .text          0x00000228       0xe4 main.o
+                0x00000228                ConfigPins
+                0x00000250                delay
+                0x00000264                prbs
+                0x00000298                SysTick
+                0x000002e4                initSysTick
+ .text          0x0000030c      0x7ec realm.o
+                0x0000030c                getWeaponName
+                0x0000033c                setHealth
+                0x00000358                setStrength
+                0x00000364                showPlayer
+                0x00000404                showRealm
+                0x00000470                showHelp
+                0x000004a8                showGameMessage
+                0x000004bc                getUserInput
+                0x000004c8                addWeapon
+                0x0000054c                rand
+                0x00000560                initRealm
+                0x000005c8                initPlayer
+                0x00000650                zap
+                0x00000670                doChallenge
+                0x00000884                step
+                0x00000a08                runGame
+ .text          0x00000af8       0x14 /usr/local/gcc-arm-none-eabi-4_7-2013q2/lib/gcc/arm-none-eabi/4.7.4/armv6-m/libgcc.a(_thumb1_case_uqi.o)
+                0x00000af8                __gnu_thumb1_case_uqi
+
+.glue_7         0x00000b0c        0x0
+ .glue_7        0x00000000        0x0 linker stubs
+
+.glue_7t        0x00000b0c        0x0
+ .glue_7t       0x00000000        0x0 linker stubs
+
+.vfp11_veneer   0x00000b0c        0x0
+ .vfp11_veneer  0x00000000        0x0 linker stubs
+
+.v4_bx          0x00000b0c        0x0
+ .v4_bx         0x00000000        0x0 linker stubs
+
+.iplt           0x00000b0c        0x0
+ .iplt          0x00000000        0x0 init.o
+
+.text.startup   0x00000b0c       0x16
+ .text.startup  0x00000b0c       0x16 main.o
+                0x00000b0c                main
+
+.rel.dyn        0x00000b24        0x0
+ .rel.iplt      0x00000000        0x0 init.o
+
+.rodata.str1.1  0x00000b22      0x4a1
+ .rodata.str1.1
+                0x00000b22        0x3 serial.o
+ .rodata.str1.1
+                0x00000b25      0x49e realm.o
+                                0x4a6 (size before relaxing)
+
+.rodata         0x00000fc3       0x29
+ .rodata        0x00000fc3       0x29 realm.o
+                0x00000fc3                Baddies
+                0x00000fc7                FindTypes
+                0x00000fcc                FreezeSpellDamage
+                0x00000fd0                FireSpellDamage
+                0x00000fd4                LightningSpellDamage
+                0x00000fd8                WeaponDamage
+                0x00000fe8                BadGuyDamage
+                0x10000000                . = ORIGIN (ram)
+
+.data           0x10000000        0x4 load address 0x00000fec
+                0x00000fec                INIT_DATA_VALUES = LOADADDR (.data)
+                0x10000000                INIT_DATA_START = .
+ *(.data)
+ .data          0x10000000        0x0 init.o
+ .data          0x10000000        0x0 serial.o
+ .data          0x10000000        0x4 main.o
+ .data          0x10000004        0x0 realm.o
+ .data          0x10000004        0x0 /usr/local/gcc-arm-none-eabi-4_7-2013q2/lib/gcc/arm-none-eabi/4.7.4/armv6-m/libgcc.a(_thumb1_case_uqi.o)
+                0x10000004                INIT_DATA_END = .
+                0x10000004                BSS_START = .
+
+.igot.plt       0x10000004        0x0 load address 0x00000ff0
+ .igot.plt      0x00000000        0x0 init.o
+
+.bss            0x10000004      0x2a9 load address 0x00000ff0
+ *(.bss)
+ .bss           0x10000004        0x0 init.o
+ .bss           0x10000004       0x1c serial.o
+ .bss           0x10000020       0x14 main.o
+                0x10000020                us100Counter
+                0x10000028                DutyCycleTimer
+                0x1000002c                Red_LED_Duty
+                0x10000030                Blue_LED_Duty
+ .bss           0x10000034        0x4 realm.o
+                0x10000034                GameStarted
+ .bss           0x10000038        0x0 /usr/local/gcc-arm-none-eabi-4_7-2013q2/lib/gcc/arm-none-eabi/4.7.4/armv6-m/libgcc.a(_thumb1_case_uqi.o)
+ COMMON         0x10000038      0x275 realm.o
+                0x10000038                theRealm
+                0x10000290                thePlayer
+                0x100002ad                BSS_END = .
+OUTPUT(main.elf elf32-littlearm)
+
+.comment        0x00000000       0x70
+ .comment       0x00000000       0x70 init.o
+                                 0x71 (size before relaxing)
+ .comment       0x00000000       0x71 serial.o
+ .comment       0x00000000       0x71 main.o
+ .comment       0x00000000       0x71 realm.o
+
+.ARM.attributes
+                0x00000000       0x31
+ .ARM.attributes
+                0x00000000       0x31 init.o
+ .ARM.attributes
+                0x00000031       0x31 serial.o
+ .ARM.attributes
+                0x00000062       0x31 main.o
+ .ARM.attributes
+                0x00000093       0x31 realm.o
+ .ARM.attributes
+                0x000000c4       0x1e /usr/local/gcc-arm-none-eabi-4_7-2013q2/lib/gcc/arm-none-eabi/4.7.4/armv6-m/libgcc.a(_thumb1_case_uqi.o)
+
+Cross Reference Table
+
+Symbol                                            File
+BSS_END                                           init.o
+BSS_START                                         init.o
+BadGuyDamage                                      realm.o
+Baddies                                           realm.o
+Blue_LED_Duty                                     main.o
+                                                  realm.o
+ConfigPins                                        main.o
+Default_Handler                                   init.o
+DutyCycleTimer                                    main.o
+FindTypes                                         realm.o
+FireSpellDamage                                   realm.o
+FreezeSpellDamage                                 realm.o
+GameStarted                                       realm.o
+HexDigit                                          serial.o
+INIT_DATA_END                                     init.o
+INIT_DATA_START                                   init.o
+INIT_DATA_VALUES                                  init.o
+LightningSpellDamage                              realm.o
+Red_LED_Duty                                      main.o
+                                                  realm.o
+SysTick                                           main.o
+                                                  init.o
+UART0_isr                                         serial.o
+                                                  init.o
+Vectors                                           init.o
+WeaponDamage                                      realm.o
+__gnu_thumb1_case_uqi                             /usr/local/gcc-arm-none-eabi-4_7-2013q2/lib/gcc/arm-none-eabi/4.7.4/armv6-m/libgcc.a(_thumb1_case_uqi.o)
+                                                  realm.o
+addWeapon                                         realm.o
+delay                                             main.o
+                                                  realm.o
+doChallenge                                       realm.o
+egetc                                             serial.o
+                                                  realm.o
+eputc                                             serial.o
+                                                  realm.o
+eputs                                             serial.o
+                                                  realm.o
+getBuf                                            serial.o
+getUserInput                                      realm.o
+getWeaponName                                     realm.o
+init                                              init.o
+initPlayer                                        realm.o
+initRealm                                         realm.o
+initSysTick                                       main.o
+initUART                                          serial.o
+                                                  main.o
+main                                              main.o
+                                                  init.o
+prbs                                              main.o
+                                                  realm.o
+printHex                                          serial.o
+                                                  realm.o
+printString                                       serial.o
+                                                  realm.o
+putBuf                                            serial.o
+rand                                            realm.o
+runGame                                           realm.o
+                                                  main.o
+rx_count                                          serial.o
+setHealth                                         realm.o
+setStrength                                       realm.o
+showGameMessage                                   realm.o
+showHelp                                          realm.o
+showPlayer                                        realm.o
+showRealm                                         realm.o
+step                                              realm.o
+thePlayer                                         realm.o
+theRealm                                          realm.o
+us100Counter                                      main.o
+zap                                               realm.o

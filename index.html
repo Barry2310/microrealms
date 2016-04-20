@@ -1,0 +1,97 @@
+<html>
+<head><Title>MicroRealms on the LPC810</Title></head>
+<body>
+<H1><center>MicroRealms</center></H1>
+<h2>Introduction</h2>
+<img src="images/realm.png" align="right">
+MicroRealms is a minimal adventure game in the style of games like Dungeons and Dragons.  It was written for a microcontroller 
+(NXP's LPC810) with a UART interface but could be ported to another platform quite easily (rewrite the contents of serial.c). 
+Given the very limited resources typically found in a microcontroller (the LPC810 has 4kB or Flash memory and 1kB of RAM) lots 
+of imagination is required to fully appreciate the game.  Many games have hidden "easter eggs" i.e. some additional feature that
+is only revealed after you perform a particular sequence of operations.  The easter egg in MicroRealms is that it contains a game
+within a game.  This "hidden" game is a challenge to all to improve (or port) MicroRealms within the limited program and data space
+available. <br>
+Special thanks to <strong>Sam Duignan</strong> and <strong>Oran Duignan</strong> for design, test and demonstration.
+<h2>Code</h2>
+Code is available for download <a href=microrealms.tar.gz> here</a><br>
+<h2>Game play</h2>
+Realm is displayed in ASCII characters as shown here.  The player is represented by an '@' symbol.
+The map legend shows the meaning of the other symbols.  Generally capital letters represent BAD GUYS (apart from X - the exit)
+while lower case letters are good things.  You can view the map during the game however be aware - each look at the map costs
+you a gold piece and the goal of the game is to amass as much gold as possible.  If you need help at any point press H.<br>
+
+<iframe src="http://www.youtube.com/embed/edL3PdMOubo" width="560" height="315" frameborder="0" allowfullscreen></iframe>
+
+<h2>System requirements</h2> 
+You don't have to compile the game, a compiled version is provided in <strong>main.elf</strong>.  You need a chip: the LPC810 - 
+I got mine from Farnell at around 1 euro each) and a USB to serial converter.  A breadboard (protoboard) is required along with a couple
+of resistors and buttons.  (See circuit diagram).  The next thing you need to do is to get the program on to the chip.  I use lpc2isp for this.
+In order to compile the game you need a cross compiler for the ARM Cortex processor.  You can get one for your platform here: 
+<a href= https://launchpad.net/gcc-arm-embedded>https://launchpad.net/gcc-arm-embedded</a><br>
+You will also need some version of GNU make.  On a Debian based Linux system (including Ubuntu) install the <strong>build-essential</strong>
+package.  On a Windows system install MinGW and its MSYS component. 
+
+<h2>Combat</h2>
+When you encounter a bad guy you can choose to fight (f) or run away (press any other key)
+When fighting you can cast spells if you have enough magic points.  The damage you do with
+each spell consists of two parts.  One part is as specified in the table below.  An additional
+"rand" amount of damage up to 10 health points is also included.  When you strike an opponent 
+with a weapon or your fist you do certain amount of damage (as outlined in the table below) as
+well as a rand amount the size of which depends on your strength points.  You lose one strength
+point for each blow.<br>
+<h3>Spell damage</h3>
+<table border="1" >
+	<tr>
+		<th>Spell</th><th>Ogre</th><th>Troll</th><th>Dragon</th><th>Hag</th><th>Cost(magic points)</th>
+	</tr>
+ 	<tr>
+ 		<td>Fire</td>	<td>20</td>	<td>10</td><td>5</td><td>0</td><td>10</td>
+ 	</tr>
+  		<td>Freeze</td><td>10</td><td>20</td><td>5</td><td>0</td><td>20</td> 
+ 	</tr>
+ 	<tr>
+   	<td>Lightning bolt</td><td>15</td><td>10</td><td>25</td><td>0</td><td>30</td>
+ 	</tr>
+</table>
+  
+<h3>Weapon damage</h3>
+<table border="1" >
+	<tr>
+		<th>Weapon</th><th>Ogre</th><th>Troll</th><th>Dragon</th><th>Hag</th>
+	</tr>
+	<tr>
+		<td>Fist</td><td>5</td><td>5</td><td>2</td><td>10</td>
+	</tr>
+	<tr>
+		<td>Axe</td><td>10</td><td>10</td><td>5</td><td>25</td>	
+	</tr>
+	<tr>
+		<td>Sword</td><td>5</td><td>15</td><td>10</td><td>25</td>
+	</tr>
+	<tr>
+		<td>Flail</td><td>10</td><td>15</td><td>5</td><td>15</td>
+	</tr>
+</table>
+	
+
+<h3>Damage done by bad guys to you</h3>
+<table border="1" >
+<tr>
+<th>Ogre</th><th>Troll</th><th>Dragon</th><th>Hag</th>
+			
+</tr>
+<tr>
+<td>20</td><td>10</td><td>30</td><td>15</td>
+</tr>
+
+</table>
+<h2>Construction</h2>
+You will need a breadboard (proto-board), two LED's, 3 470ohm resistors, an LPC810 (LPC810M021FN8FP in Farnell's catalog), two normally open momentary push buttons and some wire.  You will also need a USB to serial converter that outputs a 3.3V supply (this should cost around 5 Euro if you shop online.  Assemble the board as shown below, connect to your PC and you should be set to program the chip and play.  In-System-Programming requires you to hold down both ISP and Reset buttons.  Release the Reset button first and the internal bootloader in the LPC810 will detect that you have the ISP pin pulled to 0V.  This will cause the chip to startup in ISP mode allowing the lpc2isp utility write to it.  <br>
+<h3>Photo of the NXP LPC810 MicroRealm breadboard</h3><br>
+<img src="images/RealmBBImg.JPG" width="50%"><br>
+<h3>Detailed sketch of the NXP LPC810 MicroRealm breadboard</h3><br>
+<img src="images/RealmBB.png" width="50%"><br>
+
+<a href="http://eleceng.dit.ie/frank/arm>Back to Baremetal ARM page</a><br>
+</body>
+</html>

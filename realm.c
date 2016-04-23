@@ -71,7 +71,8 @@ void runGame(void)
 	while (1)
 	{
 		ch = getUserInput();
-		ch = ch | 32; // enforce lower case
+		if (ch != '\033')
+			ch = ch | 32; // enforce lower case
 		switch (ch) {
 			case 'h' : {
 				showHelp();
@@ -86,7 +87,6 @@ void runGame(void)
 				showGameMessage("South");
 				step('s',&thePlayer,&theRealm);
 				break;
-
 			}
 			case 'e' : {
 				showGameMessage("East");
@@ -96,6 +96,29 @@ void runGame(void)
 			case 'w' : {
 				showGameMessage("West");
 				step('w',&thePlayer,&theRealm);
+				break;
+			}
+			case '\033' : {	
+				// An arrow on the keyboard is represented by three characteres: '\033' + '[' + {'A' or 'B' or 'C' or 'D'} depending on the direction of the arrow
+				getchar();		// Skip the '['
+				switch(getchar()){
+					case 'A':	// 'A' represents the arrow up.
+						showGameMessage("North");
+						step('n',&thePlayer,&theRealm);
+						break;
+					case 'B':	// 'B' represents the arrow down.
+						showGameMessage("South");
+						step('s',&thePlayer,&theRealm);
+						break;
+					case 'C':	// 'C' represents the arrow right.
+						showGameMessage("East");
+						step('e',&thePlayer,&theRealm);
+						break;
+					case 'D':	// 'D' represents the arrow left.
+						showGameMessage("West");
+						step('w',&thePlayer,&theRealm);
+						break;
+					}
 				break;
 			}
 			case '#' : {		
@@ -112,6 +135,8 @@ void runGame(void)
 				showPlayer(&thePlayer);
 				break;
 			}
+			default:
+				break;
 		} // end switch
 	} // end while
 }
@@ -255,6 +280,9 @@ int doChallenge(tPlayer *Player,int BadGuyIndex)
 				printString(getWeaponName(Player->Weapon2));
 			}
 			printString("(P)unch");
+			ch = getUserInput();
+			if( ch == '\n')
+				// Do nothing! Just consume the new line character!
 			ch = getUserInput();
 			switch (ch)
 			{

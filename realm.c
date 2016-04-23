@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "console.h"
 #include "realm.h"
 #include <stdlib.h> // contains definition for rand
+#include <stdio.h> 	// contains definition for stdin
 // Find types: h(ealth),s(trength),m(agic),g(old),w(eapon)
 const char FindTypes[]={'h','s','m','g','w'};
 
@@ -60,7 +61,7 @@ void runGame(void)
 		if ( (ch == 'S') || (ch == 's') )
 			GameStarted = 1;
 	}
-	
+
 	initRealm(&theRealm);	
 	initPlayer(&thePlayer,&theRealm);
 	showPlayer(&thePlayer);
@@ -227,6 +228,9 @@ int doChallenge(tPlayer *Player,int BadGuyIndex)
 	const byte *dmg;
 	int BadGuyHealth = 100;
 	printString("Press F to fight");
+	ch = getUserInput();
+	if( ch == '\n')
+		// Do nothing! Just consume the new line character!
 	ch = getUserInput() | 32; // get user input and force lower case
 	if (ch == 'f')
 	{
@@ -433,7 +437,11 @@ void initPlayer(tPlayer *Player,tRealm *theRealm)
 	byte x,y;
 	char ch=0;
 	// Initialize the player's attributes
-	eputs("Enter the player's name: ");
+	printf("Enter the player's name: ");
+	ch=getchar();
+	if( ch == '\n')
+		// Do nothing! Just consume the new line character!
+	ch=0;
 	while ( (index < MAX_NAME_LEN) && (ch != '\n') && (ch != '\r'))
 	{
 		ch = getUserInput();
@@ -441,7 +449,6 @@ void initPlayer(tPlayer *Player,tRealm *theRealm)
 		{
 			
 			Player->name[index++]=ch;
-			eputc(ch);
 		}
 	}
 	Player->name[index]=0; // terminate the name

@@ -437,7 +437,7 @@ void initPlayer(tPlayer *Player,tRealm *theRealm)
 	byte x,y;
 	char ch=0;
 	// Initialize the player's attributes
-	printf("Enter the player's name: ");
+	eputs("Enter the player's name: ");
 	ch=getchar();
 	if( ch == '\n')
 		// Do nothing! Just consume the new line character!

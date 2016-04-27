@@ -124,6 +124,7 @@ void runGame(void)
 			case '#' : {		
 				if (thePlayer.wealth)		
 				{
+					showPlayer(&thePlayer);
 					showRealm(&theRealm,&thePlayer);
 					thePlayer.wealth--;
 				}

@@ -50,7 +50,7 @@ void runGame(void)
 {
 	char ch;
 	
-	printString("MicroRealms on the LPC810.");	
+	printString("Welcome to MicroRealms!");	
 	showHelp();		
 	while(GameStarted == 0)
 	{
@@ -348,8 +348,10 @@ int doChallenge(tPlayer *Player,int BadGuyIndex)
 				BadGuyHealth = 0;
 			Damage = BadGuyDamage[BadGuyIndex]+range_rand(5);
 			setHealth(Player,Player->health - Damage);
-			eputs("Health: you "); printHex(Player->health);
-			eputs(", them " );printHex(BadGuyHealth);
+			
+				printf("Health: You %d%%", Player->health);
+				printf(", them %d%%\n", BadGuyHealth);
+
 			eputs("\r\n");
 		}
 		if (Player->health == 0)
@@ -502,18 +504,19 @@ void showPlayer(tPlayer *thePlayer)
 {
 	eputs("\r\nName: ");
 	printString(thePlayer->name);
-	eputs("health: ");
-	printHex(thePlayer->health);
-	eputs("\r\nstrength: ");
-	printHex(thePlayer->strength);
-	eputs("\r\nmagic: ");
-	printHex(thePlayer->magic);
-	eputs("\r\nwealth: ");
-	printHex(thePlayer->wealth);	
-	eputs("\r\nLocation : ");
-	printHex(thePlayer->x);
-	eputs(" , ");
-	printHex(thePlayer->y);	
+	
+	
+	printf("Health: \t%d%%\n", thePlayer->health);
+	printf("Strength: \t%d%%\n", thePlayer->strength);
+	printf("Magic: \t\t%d%%\n", thePlayer->magic);
+	printf("Wealth: \t%d%%\n", thePlayer->wealth);
+
+	
+	printf("Location: \t%d", thePlayer->x);
+	printf("-x , %d", thePlayer->y);
+	printf("-y");
+
+	
 	eputs("\r\nWeapon1 : ");
 	printString(getWeaponName(thePlayer->Weapon1));
 	eputs("Weapon2 : ");
@@ -564,17 +567,18 @@ void showRealm(tRealm *Realm,tPlayer *thePlayer)
 	}
 	printString("\r\nLegend");
 	printString("(T)roll, (O)gre, (D)ragon, (H)ag, e(X)it");
-	printString("(w)eapon, (g)old), (m)agic, (s)trength");
+	printString("(w)eapon, (g)old, (m)agic, (s)trength");
 	printString("@=You");
 }
 void showHelp()
 {
 
-	printString("Help");
-	printString("N,S,E,W : go North, South, East, West");
-	printString("# : show map (cost: 1 gold piece)");
-	printString("(H)elp");
-	printString("(P)layer details");
+	printString("\n** Help **");
+	printString("Use the arrow keys to choose dirction");
+	printString("Action: Up -> North, Right -> East, Down -> South, Left -> West");
+	printString("Action: # -> show map (Cost: 1 gold piece)");
+	printString("Action: H -> Help");
+	printString("Action: P -> Player details\n");
 	
 }
 

@@ -21,14 +21,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "realm.h"
 #include <stdlib.h> // contains definition for rand
 #include <stdio.h> 	// contains definition for stdin
+FILE *save;
 // Find types: h(ealth),s(trength),m(agic),g(old),w(eapon)
 const char FindTypes[]={'h','s','m','g','w'};
 
 
 // The following arrays define the bad guys and 
 // their battle properies - ordering matters!
-// Baddie types : O(gre),T(roll),D(ragon),H(ag)
-const char Baddies[]={'O','T','D','H'};
+// Baddie types : O(gre),T(roll),D(ragon),H(ag),G(oblin)
+const char Baddies[]={'O','T','D','H','G'};
 // The following is 4 sets of 4 damage types
 const byte WeaponDamage[]={10,10,5,25,10,10,5,25,10,15,5,15,5,5,2,10};
 #define ICE_SPELL_COST 10
@@ -38,18 +39,26 @@ const byte WeaponDamage[]={10,10,5,25,10,10,5,25,10,15,5,15,5,5,2,10};
 #define RAY_HANDS_COST 25
 #define THUNDER_KICK_COST 35
 //aditiional attacks
-const byte MagicDiceDamage[]={10,20,5,0};
-const byte RayDamage[]={10,20,5,0};
-const byte ThunderKickDamage[]={20,10,5,0};
-///////////////////////////////////////////////
-const byte FreezeSpellDamage[]={10,20,5,0};
-const byte FireSpellDamage[]={20,10,5,0};
-const byte LightningSpellDamage[]={15,10,25,0};
-const byte BadGuyDamage[]={10,10,15,5};
+
+const byte MagicDiceDamage[]={10,20,5,0,20};
+const byte RayDamage[]={10,20,5,0,20};
+const byte ThunderKickDamage[]={20,10,5,0,35};
+///////////////////////////////////////////////////////////////////
+//changed damages - Ice Troll needs fire, Ice more effective against dragons, added Goblin Damage
+const byte FreezeSpellDamage[]={10,0,40,5,25};
+const byte FireSpellDamage[]={20,40,0,5,30};
+const byte LightningSpellDamage[]={15,0,25,40,50};
+const byte BadGuyDamage[]={10,10,15,5,20};
+/////////////////////////////////////////////////////////////////
+
 int GameStarted = 0;
 tPlayer thePlayer;
 tRealm theRealm;
 void delay(int len);
+void saveR(tRealm *theRealm);			//Functions declared before to avoid implicit declaration error
+void saveP(tPlayer *thePlayer);			//Functions declared before to avoid implicit declaration error
+void loadR(tRealm *theRealm);			//Functions declared before to avoid implicit declaration error
+void loadP(tPlayer *thePlayer);			//Functions declared before to avoid implicit declaration error
 unsigned range_rand(unsigned range)
 {
 	return rand() % (range+1);
@@ -63,15 +72,27 @@ void runGame(void)
 	while(GameStarted == 0)
 	{
 		
-		showGameMessage("Press S to start a new game");
+		showGameMessage("Press S to start a new game or L to load a previous game");
 		ch = getUserInput();			
-		
-		if ( (ch == 'S') || (ch == 's') )
+///////////////////////////////////////////////////////////////////
+//save file attempt - seperate if statements allow for load and save to stop interfering with one another		
+		if ( (ch == 'S') || (ch == 's') || (ch == 'L') || (ch == 'l'))
 			GameStarted = 1;
 	}
-
-	initRealm(&theRealm);	
-	initPlayer(&thePlayer,&theRealm);
+		if( (ch == 'S') || (ch == 's') )
+ 		{
+ 		initRealm(&theRealm);	
+		initPlayer(&thePlayer,&theRealm);
+ 		showGameMessage("New Game started!\n");
+		}
+		if( (ch == 'L') || (ch == 'l') )
+ 		{
+ 		loadR(&theRealm);
+		loadP(&thePlayer);
+ 		showGameMessage("Game Loaded!\n");
+		}
+///////////////////////////////////////////////////////////////////
+	
 	showPlayer(&thePlayer);
 	showRealm(&theRealm,&thePlayer);
 	showGameMessage("Press H for help");
@@ -82,6 +103,7 @@ void runGame(void)
 		if (ch != '\033')
 			ch = ch | 32; // enforce lower case
 		switch (ch) {
+
 			case 'h' : {
 				showHelp();
 				break;
@@ -144,6 +166,16 @@ void runGame(void)
 				showPlayer(&thePlayer);
 				break;
 			}
+
+//////////////////////////////////////////////////////////////
+			case '*' : {
+				saveP(&thePlayer);//save player
+				saveR(&theRealm); //save map
+				showGameMessage("Save Successful");
+				break;
+			}
+///////////////////////////////////////////////////////////////
+
 			default:
 				break;
 		} // end switch
@@ -214,6 +246,13 @@ void step(char Direction,tPlayer *Player,tRealm *Realm)
 			Consumed = doChallenge(Player,3);
 			break;
 		}
+////////////////////////////////////////////////////////////////
+		case 'G' :{
+			showGameMessage("A wart covered Goblin attacks");
+			Consumed = doChallenge(Player,4);
+			break;
+		}
+////////////////////////////////////////////////////////////////
 		case 'h' :{
 			showGameMessage("You find an elixer of health");
 			setHealth(Player,Player->health+10);
@@ -280,11 +319,12 @@ int doChallenge(tPlayer *Player,int BadGuyIndex)
 			if (Player->magic > LIGHTNING_SPELL_COST)
 				printString("(L)ightning spell");
 			if (Player->magic > MAGIC_DICE_COST)
-				printString("(M)agic Dice");
-			if (Player->magic > RAY_HANDS_COST)
-				printString("(R)ay Hands");
-			if (Player->magic > THUNDER_KICK_COST)
-				printString("(T)hunder KIck");
+ 				printString("(M)agic Dice");
+ 			if (Player->magic > RAY_HANDS_COST)
+ 				printString("(R)ay Hands");
+ 			if (Player->magic > THUNDER_KICK_COST)
+ 				printString("(T)hunder KIck");
+
 			if (Player->Weapon1)
 			{
 				eputs("(1)Use ");
@@ -302,60 +342,104 @@ int doChallenge(tPlayer *Player,int BadGuyIndex)
 			ch = getUserInput();
 			switch (ch)
 			{
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//No magic = no spell
 				case 'i':
 				case 'I':
 				{
+					if(Player->magic > ICE_SPELL_COST){
 					printString("FREEZE!");
 					Player->magic -= ICE_SPELL_COST;
 					BadGuyHealth -= FreezeSpellDamage[BadGuyIndex]+range_rand(10);
 					zap();
-					break;
+					}
+					else{
+					printString("Not enough Magic!");
+					}				
+				break;
 				}
+
 				case 'f':
 				case 'F':
 				{
+					if(Player->magic > FIRE_SPELL_COST){
 					printString("BURN!");
 					Player->magic -= FIRE_SPELL_COST;
 					BadGuyHealth -= FireSpellDamage[BadGuyIndex]+range_rand(10);
 					zap();
-					break;
+					}
+					else{
+					printString("Not enough Magic!");
+					}				
+				
+				break;
 				}
+
 				case 'l':
 				case 'L':
 				{
+					if(Player->magic > LIGHTNING_SPELL_COST){
 					printString("ZAP!");
 					Player->magic -= LIGHTNING_SPELL_COST;
 					BadGuyHealth -= LightningSpellDamage[BadGuyIndex]+range_rand(10);
 					zap();
-					break;
+					}
+					else{
+					printString("Not enough Magic!");
+					}				
+				
+				break;
 				}
+
 				case 'm':
 				case 'M':
 				{
+					if(Player->magic > MAGIC_DICE_COST){
 					printString("Magic Dice");
-					Player->magic -= MAGIC_DICE_COST;
-					BadGuyHealth -= MagicDiceDamage[BadGuyIndex]+range_rand(10);
+ 					Player->magic -= MAGIC_DICE_COST;
+ 					BadGuyHealth -= MagicDiceDamage[BadGuyIndex]+range_rand(10);
 					zap();
-					break;
+					}
+					else{
+					printString("Not enough Magic!");
+					}				
+				
+				break;
 				}
-			    	case 'r':
+
+				case 'r':
 				case 'R':
 				{
+					if(Player->magic > RAY_HANDS_COST){
 					printString("RAY!");
-					Player->magic -= RAY_HANDS_COST;
-					BadGuyHealth -= RayDamage[BadGuyIndex]+range_rand(10);
-					zap();
-					break;
+ 					Player->magic -= RAY_HANDS_COST;
+ 					BadGuyHealth -= RayDamage[BadGuyIndex]+range_rand(10);
+ 					zap();
+					}
+					else{
+					printString("Not enough Magic!");
+					}				
+				
+				break;
 				}
-			        case 't':
+
+				case 't':
 				case 'T':
 				{
+					if(Player->magic > THUNDER_KICK_COST){
 					printString("Thunder Kick!");
-					Player->magic -=THUNDER_KICK_COST;
-					BadGuyHealth -= ThunderKickDamage[BadGuyIndex]+range_rand(10);
-					zap();
-					break;
+ 					Player->magic -=THUNDER_KICK_COST;
+ 					BadGuyHealth -= ThunderKickDamage[BadGuyIndex]+range_rand(10);
+ 					zap();
+					}
+					else{
+					printString("Not enough Magic!");
+					}				
+				
+				break;
 				}
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
 				case '1':
 				{
 					dmg = WeaponDamage+(Player->Weapon1<<2)+BadGuyIndex;
@@ -546,19 +630,13 @@ void showPlayer(tPlayer *thePlayer)
 {
 	eputs("\r\nName: ");
 	printString(thePlayer->name);
-	
-	
 	printf("Health: \t%d%%\n", thePlayer->health);
 	printf("Strength: \t%d%%\n", thePlayer->strength);
 	printf("Magic: \t\t%d%%\n", thePlayer->magic);
 	printf("Wealth: \t%d%%\n", thePlayer->wealth);
-
-	
 	printf("Location: \t%d", thePlayer->x);
 	printf("-x , %d", thePlayer->y);
 	printf("-y");
-
-	
 	eputs("\r\nWeapon1 : ");
 	printString(getWeaponName(thePlayer->Weapon1));
 	eputs("Weapon2 : ");
@@ -608,7 +686,7 @@ void showRealm(tRealm *Realm,tPlayer *thePlayer)
 		eputs("\r\n");
 	}
 	printString("\r\nLegend");
-	printString("(T)roll, (O)gre, (D)ragon, (H)ag, e(X)it");
+	printString("Ice (T)roll, (O)gre, (D)ragon, (H)ag, (G)oblin, e(X)it");
 	printString("(w)eapon, (g)old, (m)agic, (s)trength");
 	printString("@=You");
 }
@@ -621,6 +699,7 @@ void showHelp()
 	printString("Action: # -> show map (Cost: 1 gold piece)");
 	printString("Action: H -> Help");
 	printString("Action: P -> Player details\n");
+	printString("Action: * -> Save Game\n");
 	
 }
 
@@ -636,8 +715,103 @@ char getUserInput()
 		ch = egetc();	
 	return ch;
 }
-
+///////////////////Changes/////////////////////////////////////////////
+//play sound on zap
 void zap()
 {
-	// do some special effect when someone uses a spell
+	system("canberra-gtk-play -f 0437.ogg");
 }
+/////////////////////////////////////////////////////////////////////
+/////////////////////Save Load Attempt///////////////////////////////
+//this function saves realm data
+void saveR(tRealm *theRealm)
+{
+//save realm array in text file
+	int x;							//temp variables
+	int y;
+   	save = fopen("saveR.txt", "w");				//saveto text file
+	for(y=0;y < MAP_HEIGHT; y++)				//nested for loopsto examine each square
+	{
+		for(x=0; x < MAP_WIDTH; x++)
+		fprintf(save, "%d ", theRealm->map[y][x]);	//save value of each square
+		fprintf(save, "\n");				//new line at end of width
+	}
+  	fclose(save);			
+}
+////////////////////////////////////////////////////////////
+//Thisfunction loads a realms data 
+void loadR(tRealm *theRealm)
+{
+	int x;							//temp variables
+	int y;
+   	save = fopen("saveR.txt","r");				//save txt file
+	for(y=0;y < MAP_HEIGHT; y++)				//nested for loops to replace map data with previous
+	{
+		for(x=0; x < MAP_WIDTH; x++)
+		{
+		fscanf(save, "%s", &theRealm->map[y][x]);	//loads map values
+		fseek(save , 1+ x/(MAP_WIDTH-1),SEEK_CUR); 	//skips spaces in file
+		}
+	}
+  	fclose(save);	
+}
+//////////////////////////////////////////////////////////
+//save player values in text file
+void saveP(tPlayer *thePlayer)
+{
+   	save = fopen("saveP.txt", "w");
+   	fprintf(save, "Name: %s\n", thePlayer->name);
+   	fprintf(save, "Health: %d\n", thePlayer->health);
+   	fprintf(save, "Strength: %d\n", thePlayer->strength);
+   	fprintf(save, "Magic: %d\n", thePlayer->magic);
+   	fprintf(save, "Wealth: %d\n", thePlayer->wealth);
+   	fprintf(save, "Location: %d, %d\n", thePlayer->x, thePlayer->y);
+	fprintf(save, "Weapon1: %d\n", thePlayer->Weapon1);
+	fprintf(save, "Weapon2: %d\n", thePlayer->Weapon2);
+  	fclose(save);			
+}
+/////////////////////////////////////////////////////////////////////
+//Thisfunction loads a players data 
+void loadP(tPlayer *thePlayer)
+{
+	char x[50];			//temp variable to transfer data
+   	save = fopen("saveP.txt", "r");
+   	fscanf(save, "%s", x); 		//uses same values presen in initplayer 
+	fseek (save, 1 , SEEK_CUR); 
+	fscanf(save, "%s", thePlayer->name);
+   	fscanf(save, "%s", x); 
+	fseek (save, 1 , SEEK_CUR); 
+  	fscanf(save, "%s", &thePlayer->health);
+   	fscanf(save, "%s", x); 
+	fseek (save, 1 , SEEK_CUR); 
+  	fscanf(save, "%s", &thePlayer->strength);
+   	fscanf(save, "%s", x); 
+	fseek (save, 1 , SEEK_CUR); 
+  	fscanf(save, "%s", &thePlayer->magic);
+   	fscanf(save, "%s", x); 
+	fseek (save, 1 , SEEK_CUR); 
+  	fscanf(save, "%s", &thePlayer->wealth);
+   	fscanf(save, "%s", x);
+	fseek (save, 1 , SEEK_CUR); 
+  	fscanf(save, "%s", &thePlayer->x);
+   	fscanf(save, "%s", x); 
+	fseek (save, 1 , SEEK_CUR); 
+  	fscanf(save, "%s", &thePlayer->y);
+   	fscanf(save, "%s", x); 
+	fseek (save, 1 , SEEK_CUR); 
+  	fscanf(save, "%s", &thePlayer->Weapon1);
+	fscanf(save, "%s", x); 
+	fseek (save, 1 , SEEK_CUR); 
+  	fscanf(save, "%s", &thePlayer->Weapon2);
+	fclose(save);
+}
+////////////////////////////end of changes////////////////
+
+
+
+
+
+
+
+
+

@@ -34,6 +34,14 @@ const byte WeaponDamage[]={10,10,5,25,10,10,5,25,10,15,5,15,5,5,2,10};
 #define ICE_SPELL_COST 10
 #define FIRE_SPELL_COST 20
 #define LIGHTNING_SPELL_COST 30
+#define MAGIC_DICE_COST 15
+#define RAY_HANDS_COST 25
+#define THUNDER_KICK_COST 35
+//aditiional attacks
+const byte MagicDiceDamage[]={10,20,5,0};
+const byte RayDamage[]={10,20,5,0};
+const byte ThunderKickDamage[]={20,10,5,0};
+///////////////////////////////////////////////
 const byte FreezeSpellDamage[]={10,20,5,0};
 const byte FireSpellDamage[]={20,10,5,0};
 const byte LightningSpellDamage[]={15,10,25,0};
@@ -260,6 +268,7 @@ int doChallenge(tPlayer *Player,int BadGuyIndex)
 	ch = getUserInput() | 32; // get user input and force lower case
 	if (ch == 'f')
 	{
+
 		printString("Choose action");
 		while ( (Player->health > 0) && (BadGuyHealth > 0) )
 		{
@@ -270,6 +279,12 @@ int doChallenge(tPlayer *Player,int BadGuyIndex)
 				printString("(F)ire spell");
 			if (Player->magic > LIGHTNING_SPELL_COST)
 				printString("(L)ightning spell");
+			if (Player->magic > MAGIC_DICE_COST)
+				printString("(M)agic Dice");
+			if (Player->magic > RAY_HANDS_COST)
+				printString("(R)ay Hands");
+			if (Player->magic > THUNDER_KICK_COST)
+				printString("(T)hunder KIck");
 			if (Player->Weapon1)
 			{
 				eputs("(1)Use ");
@@ -311,6 +326,33 @@ int doChallenge(tPlayer *Player,int BadGuyIndex)
 					printString("ZAP!");
 					Player->magic -= LIGHTNING_SPELL_COST;
 					BadGuyHealth -= LightningSpellDamage[BadGuyIndex]+range_rand(10);
+					zap();
+					break;
+				}
+				case 'm':
+				case 'M':
+				{
+					printString("Magic Dice");
+					Player->magic -= MAGIC_DICE_COST;
+					BadGuyHealth -= MagicDiceDamage[BadGuyIndex]+range_rand(10);
+					zap();
+					break;
+				}
+			    	case 'r':
+				case 'R':
+				{
+					printString("RAY!");
+					Player->magic -= RAY_HANDS_COST;
+					BadGuyHealth -= RayDamage[BadGuyIndex]+range_rand(10);
+					zap();
+					break;
+				}
+			        case 't':
+				case 'T':
+				{
+					printString("Thunder Kick!");
+					Player->magic -=THUNDER_KICK_COST;
+					BadGuyHealth -= ThunderKickDamage[BadGuyIndex]+range_rand(10);
 					zap();
 					break;
 				}

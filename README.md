@@ -1,6 +1,6 @@
 # microrealms_desktop
 A desktop version of the microrealms game
-Modification by ROberto
+Modification by Roberto. Added the feature of controlling the player by the keyboard arrows and fixed the error that doesn't allow insert a player name. Also fixed the error that doesn't allow the player fight.
 Modification by Barry, again
 Modification by Sean
 Modification by Shane. confirm working on Ubuntu.

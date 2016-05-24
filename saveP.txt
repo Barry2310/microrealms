@@ -1,0 +1,8 @@
+Name: roberto
+Health: 33
+Strength: 58
+Magic: 61
+Wealth: 65
+Location: 10, 16
+Weapon1: 0
+Weapon2: 0
